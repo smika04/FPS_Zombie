@@ -5,26 +5,32 @@ using UnityEngine;
 public class Bullet : MonoBehaviour
 {
     // Викликається, коли об'єкт зіштовхується з іншим колайдером
-    private void OnCollisionEnter(Collision collision)
+    private void OnCollisionEnter(Collision objectHit)
     {
         // Перевіряємо, чи об'єкт, з яким сталося зіткнення, має тег "Target"
-        if (collision.gameObject.CompareTag("Target"))
+        if (objectHit.gameObject.CompareTag("Target"))
         {
-            print("hit " + collision.gameObject.name + "!");
+            print("hit " + objectHit.gameObject.name + "!");
 
-            CreateBulletImpactEffect(collision);
+            CreateBulletImpactEffect(objectHit);
 
             // Знищуємо кулю після попадання
             Destroy(gameObject);
         }
-        if (collision.gameObject.CompareTag("Wall"))
+        if (objectHit.gameObject.CompareTag("Wall"))
         {
-            print("hit " + collision.gameObject.name + "!");
+            print("hit " + objectHit.gameObject.name + "!");
 
-            CreateBulletImpactEffect(collision);
+            CreateBulletImpactEffect(objectHit);
 
             // Знищуємо кулю після попадання
             Destroy(gameObject);
+        }
+        if (objectHit.gameObject.CompareTag("Beer"))
+        {
+            print("hit " + objectHit.gameObject.name + "!");
+
+            objectHit.gameObject.GetComponent<BeerBottle>().Shatter();
         }
     }
 
