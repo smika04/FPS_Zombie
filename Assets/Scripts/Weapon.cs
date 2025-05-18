@@ -17,7 +17,9 @@ public class Weapon : MonoBehaviour
     public GameObject bulletPrefab;             
     public Transform bulletSpawn;             
     public float bulletVelocity = 30;         
-    public float bulletPrefabLifeTime = 3f;     
+    public float bulletPrefabLifeTime = 3f;
+
+    public GameObject muzzleEffect;
 
     public enum ShootingMode
     {
@@ -59,6 +61,9 @@ public class Weapon : MonoBehaviour
     // Метод створення та запуску кулі
     private void FireWeapon()
     {
+        muzzleEffect.GetComponent<ParticleSystem>().Play();
+        SoundManager.Instance.shootingSound_M.Play();
+
         readyToShoot = false;
 
         Vector3 shootingDirection = CalculateDirectionAndSpread().normalized;
