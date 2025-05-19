@@ -88,11 +88,6 @@ public class Weapon : MonoBehaviour
                 burstBullletsLeft = bulletsPerBurst; // —кидаЇмо к≥льк≥сть постр≥л≥в у черз≥
                 FireWeapon(); // ¬икликаЇмо стр≥льбу
             }
-
-            if (AmmoManager_.Instance.ammoDisplay != null)
-            {
-                AmmoManager_.Instance.ammoDisplay.text = $"{bulletsLeft / bulletsPerBurst}/{magazineSize / bulletsPerBurst}";
-            }
         }
     }
 
