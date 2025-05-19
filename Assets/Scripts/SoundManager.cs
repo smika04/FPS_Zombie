@@ -17,6 +17,8 @@ public class SoundManager : MonoBehaviour
 
     public AudioSource emptySound_M11911;
 
+    public AudioSource shootingSound_AK74;
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -39,7 +41,9 @@ public class SoundManager : MonoBehaviour
             case WeaponModel.Uzi:
                 ShootingChannel.PlayOneShot(shootSound_Uzi);
                 break;
-
+            case WeaponModel.AK74:
+                shootingSound_AK74.Play();
+                break;
         }
     }
 
@@ -51,6 +55,9 @@ public class SoundManager : MonoBehaviour
                 emptySound_M11911.Play();
                 break;
             case WeaponModel.Uzi:
+                emptySound_M11911.Play();
+                break;
+            case WeaponModel.AK74:
                 emptySound_M11911.Play();
                 break;
 
@@ -65,6 +72,9 @@ public class SoundManager : MonoBehaviour
                 relodingSound_M11911.Play();
                 break;
             case WeaponModel.Uzi:
+                relodingSound_Uzi.Play();
+                break;
+            case WeaponModel.AK74:
                 relodingSound_Uzi.Play();
                 break;
 

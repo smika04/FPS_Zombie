@@ -7,6 +7,8 @@ using UnityEngine;
 
 public class Weapon : MonoBehaviour
 {
+    public bool isActiveWeapon;
+
     public bool isShooting, readyToShoot;
     bool allowReset = true;
     public float shootingDelay = 2f;
@@ -22,6 +24,7 @@ public class Weapon : MonoBehaviour
     public float bulletPrefabLifeTime = 3f;
 
     public GameObject muzzleEffect;
+    //internal Animator animator;
 
     public float reloadTime;
     public int magazineSize, bulletsLeft;
@@ -30,6 +33,9 @@ public class Weapon : MonoBehaviour
     public ShootingMode currentShootingMode;
     public WeaponModel thisWeaponModel;
 
+    public Vector3 spawnPosition;
+    public Vector3 spawnRotation;
+            
     private void Awake()
     {
         readyToShoot = true; // «бро€ готова до стр≥льби
@@ -40,48 +46,53 @@ public class Weapon : MonoBehaviour
 
     void Update()
     {
-        if (bulletsLeft <= 0 && isShooting)
+        if (isActiveWeapon)
         {
-            SoundManager.Instance.PlayEmptySound(thisWeaponModel);
-        }
+            GetComponent<Outline>().enabled = false;
 
-        // ¬изначаЇмо, чи гравець натискаЇ кнопку стр≥льби залежно в≥д режиму стр≥льби
-        if (currentShootingMode == ShootingMode.Auto)
-        {
-            // ƒл€ автоматичного режиму утриманн€ кнопки миш≥
-            isShooting = Input.GetKey(KeyCode.Mouse0);
-        }
-        else if (currentShootingMode == ShootingMode.Single || currentShootingMode == ShootingMode.Burst)
-        {
-            // ƒл€ одиночного або чергового режиму Ч одиночне натисканн€ кнопки миш≥
-            isShooting = Input.GetKeyDown(KeyCode.Mouse0);
-        }
+            if (bulletsLeft <= 0 && isShooting)
+            {
+                SoundManager.Instance.PlayEmptySound(thisWeaponModel);
+            }
 
-        if(Input.GetKeyDown(KeyCode.R) && bulletsLeft < magazineSize && isRealoding == false)
-        {
-            Reload();
-            //SoundManager.Instance.realodingSound_M.Play();
+            // ¬изначаЇмо, чи гравець натискаЇ кнопку стр≥льби залежно в≥д режиму стр≥льби
+            if (currentShootingMode == ShootingMode.Auto)
+            {
+                // ƒл€ автоматичного режиму утриманн€ кнопки миш≥
+                isShooting = Input.GetKey(KeyCode.Mouse0);
+            }
+            else if (currentShootingMode == ShootingMode.Single || currentShootingMode == ShootingMode.Burst)
+            {
+                // ƒл€ одиночного або чергового режиму Ч одиночне натисканн€ кнопки миш≥
+                isShooting = Input.GetKeyDown(KeyCode.Mouse0);
+            }
 
-            SoundManager.Instance.PlayReloadSound(thisWeaponModel);
-        }
+            if (Input.GetKeyDown(KeyCode.R) && bulletsLeft < magazineSize && isRealoding == false)
+            {
+                Reload();
+                //SoundManager.Instance.realodingSound_M.Play();
 
-        //Automatic
-        //if(readyToShoot && isShooting == false && isRealoding == false && bulletsLeft <= 0)
-        //{
-        //    Reload();
-        //}
+                SoundManager.Instance.PlayReloadSound(thisWeaponModel);
+            }
 
-        // якщо збро€ готова до стр≥льби ≥ гравець стр≥л€Ї
+            //Automatic
+            //if(readyToShoot && isShooting == false && isRealoding == false && bulletsLeft <= 0)
+            //{
+            //    Reload();
+            //}
 
-        if (readyToShoot && isShooting && bulletsLeft > 0)
-        {
-            burstBullletsLeft = bulletsPerBurst; // —кидаЇмо к≥льк≥сть постр≥л≥в у черз≥
-            FireWeapon(); // ¬икликаЇмо стр≥льбу
-        }
+            // якщо збро€ готова до стр≥льби ≥ гравець стр≥л€Ї
 
-        if (AmmoManager_.Instance.ammoDisplay != null)
-        {
-            AmmoManager_.Instance.ammoDisplay.text = $"{bulletsLeft / bulletsPerBurst}/{magazineSize / bulletsPerBurst}";
+            if (readyToShoot && isShooting && bulletsLeft > 0)
+            {
+                burstBullletsLeft = bulletsPerBurst; // —кидаЇмо к≥льк≥сть постр≥л≥в у черз≥
+                FireWeapon(); // ¬икликаЇмо стр≥льбу
+            }
+
+            if (AmmoManager_.Instance.ammoDisplay != null)
+            {
+                AmmoManager_.Instance.ammoDisplay.text = $"{bulletsLeft / bulletsPerBurst}/{magazineSize / bulletsPerBurst}";
+            }
         }
     }
 
