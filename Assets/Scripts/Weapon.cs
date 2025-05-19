@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class Weapon : MonoBehaviour
@@ -21,6 +22,10 @@ public class Weapon : MonoBehaviour
 
     public GameObject muzzleEffect;
 
+    public float reloadTime;
+    public int magazineSize, bulletsLeft;
+    public bool isRealoding;
+
     public enum ShootingMode
     {
         Single,
@@ -34,10 +39,17 @@ public class Weapon : MonoBehaviour
     {
         readyToShoot = true; // «бро€ готова до стр≥льби
         burstBullletsLeft = bulletsPerBurst; // ≤н≥ц≥ал≥зац≥€ к≥лькост≥ постр≥л≥в у черз≥
+
+        bulletsLeft = magazineSize;
     }
 
     void Update()
     {
+        if (bulletsLeft <= 0 && isShooting)
+        {
+            SoundManager.Instance.emptySound_M.Play();
+        }
+
         // ¬изначаЇмо, чи гравець натискаЇ кнопку стр≥льби залежно в≥д режиму стр≥льби
         if (currentShootingMode == ShootingMode.Auto)
         {
@@ -50,17 +62,37 @@ public class Weapon : MonoBehaviour
             isShooting = Input.GetKeyDown(KeyCode.Mouse0);
         }
 
+        if(Input.GetKeyDown(KeyCode.R) && bulletsLeft < magazineSize && isRealoding == false)
+        {
+            Reload();
+            SoundManager.Instance.realodingSound_M.Play();
+        }
+
+        //Automatic
+        //if(readyToShoot && isShooting == false && isRealoding == false && bulletsLeft <= 0)
+        //{
+        //    Reload();
+        //}
+
         // якщо збро€ готова до стр≥льби ≥ гравець стр≥л€Ї
-        if (readyToShoot && isShooting)
+
+        if (readyToShoot && isShooting && bulletsLeft > 0)
         {
             burstBullletsLeft = bulletsPerBurst; // —кидаЇмо к≥льк≥сть постр≥л≥в у черз≥
             FireWeapon(); // ¬икликаЇмо стр≥льбу
+        }
+
+        if (AmmoManager_.Instance.ammoDisplay != null)
+        {
+            AmmoManager_.Instance.ammoDisplay.text = $"{bulletsLeft / bulletsPerBurst}/{magazineSize / bulletsPerBurst}";
         }
     }
 
     // ћетод створенн€ та запуску кул≥
     private void FireWeapon()
     {
+        bulletsLeft--;
+
         muzzleEffect.GetComponent<ParticleSystem>().Play();
         SoundManager.Instance.shootingSound_M.Play();
 
@@ -90,6 +122,19 @@ public class Weapon : MonoBehaviour
             burstBullletsLeft--;
             Invoke("FireWeapon", shootingDelay);
         }
+    }
+
+    private void Reload()
+    {
+        isRealoding = true;
+
+        Invoke("ReloadCompleted", reloadTime);
+    }
+
+    private void ReloadCompleted()
+    {
+        bulletsLeft = magazineSize;
+        isRealoding = false;
     }
 
     private void ResetShot()
