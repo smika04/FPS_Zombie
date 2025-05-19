@@ -1,3 +1,4 @@
+using Assets.Scripts.Enums;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -26,14 +27,8 @@ public class Weapon : MonoBehaviour
     public int magazineSize, bulletsLeft;
     public bool isRealoding;
 
-    public enum ShootingMode
-    {
-        Single,
-        Burst,
-        Auto
-    }
-
     public ShootingMode currentShootingMode;
+    public WeaponModel thisWeaponModel;
 
     private void Awake()
     {
@@ -47,7 +42,7 @@ public class Weapon : MonoBehaviour
     {
         if (bulletsLeft <= 0 && isShooting)
         {
-            SoundManager.Instance.emptySound_M.Play();
+            SoundManager.Instance.PlayEmptySound(thisWeaponModel);
         }
 
         // Визначаємо, чи гравець натискає кнопку стрільби залежно від режиму стрільби
@@ -65,7 +60,9 @@ public class Weapon : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.R) && bulletsLeft < magazineSize && isRealoding == false)
         {
             Reload();
-            SoundManager.Instance.realodingSound_M.Play();
+            //SoundManager.Instance.realodingSound_M.Play();
+
+            SoundManager.Instance.PlayReloadSound(thisWeaponModel);
         }
 
         //Automatic
@@ -94,7 +91,7 @@ public class Weapon : MonoBehaviour
         bulletsLeft--;
 
         muzzleEffect.GetComponent<ParticleSystem>().Play();
-        SoundManager.Instance.shootingSound_M.Play();
+        SoundManager.Instance.PlayShootingSound(thisWeaponModel);
 
         readyToShoot = false;
 
