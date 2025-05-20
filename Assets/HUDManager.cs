@@ -42,7 +42,14 @@ public class HUDManager : MonoBehaviour
     private void Update()
     {
         Weapon activeWeapon = WeaponManager.Instance.activeWeaponSlot.GetComponentInChildren<Weapon>();
-        Weapon unActiveWeapon = ((GameObject)GetUnActiveWeaponSlot()).GetComponentInChildren<Weapon>();
+
+        GameObject unActiveSlot = GetUnActiveWeaponSlot();
+        Debug.Log("UnActive Weapon Slot: " + (unActiveSlot != null ? unActiveSlot.name : "null"));
+
+        Weapon unActiveWeapon = unActiveSlot != null ? unActiveSlot.GetComponentInChildren<Weapon>() : null;
+        Debug.Log("UnActive Weapon: " + (unActiveWeapon != null ? unActiveWeapon.thisWeaponModel.ToString() : "null"));
+
+        Debug.Log("Active Weapon Model: " + (activeWeapon != null ? activeWeapon.thisWeaponModel.ToString() : "null"));
 
         if (activeWeapon)
         {
@@ -51,10 +58,13 @@ public class HUDManager : MonoBehaviour
 
             WeaponModel model = activeWeapon.thisWeaponModel;
             ammoTypeUI.sprite = GetAmmoSprite(model);
+            activeWeaponUI.sprite = GetWeaponSprite(model);
 
-            if(unActiveWeapon)
+            if (unActiveWeapon)
             {
-                unActiveWeaponUI.sprite = GetWeaponSprite(unActiveWeapon.thisWeaponModel);
+                Sprite weaponSprite = GetWeaponSprite(unActiveWeapon.thisWeaponModel);
+                Debug.Log("Weapon sprite loaded: " + (weaponSprite != null));
+                unActiveWeaponUI.sprite = weaponSprite;
             }
         }
         else
@@ -69,42 +79,95 @@ public class HUDManager : MonoBehaviour
         }
     }
 
+
     private Sprite GetWeaponSprite(WeaponModel model)
     {
-        switch(model)
-        {
-            case WeaponModel.M11911:
-                return Instantiate(Resources.Load<GameObject>("M11911_Weapon")).GetComponent<SpriteRenderer>().sprite;
-            case WeaponModel.Uzi:
-                return Instantiate(Resources.Load<GameObject>("Uzi_Weapon")).GetComponent<SpriteRenderer>().sprite;
-            case WeaponModel.AK74:
-                return Instantiate(Resources.Load<GameObject>("AK74_Weapon")).GetComponent<SpriteRenderer>().sprite; 
+        string path = "";
 
-            default:
-                return null;
-
-        }
-    }
-
-    private Sprite GetAmmoSprite(WeaponModel model)
-    {
         switch (model)
         {
             case WeaponModel.M11911:
-                return Instantiate(Resources.Load<GameObject>("Pistol_Ammo")).GetComponent<SpriteRenderer>().sprite;
+                path = "M11911_Weapon";
+                break;
             case WeaponModel.Uzi:
-                return Instantiate(Resources.Load<GameObject>("Rifle_Ammo")).GetComponent<SpriteRenderer>().sprite;
+                path = "Uzi_Weapon";
+                break;
             case WeaponModel.AK74:
-                return Instantiate(Resources.Load<GameObject>("Rifle_Ammo")).GetComponent<SpriteRenderer>().sprite;
-
+                path = "AK74_Weapon";
+                break;
             default:
+                Debug.LogWarning("Unknown weapon model: " + model);
                 return null;
-
         }
+
+        GameObject prefab = Resources.Load<GameObject>(path);
+        if (prefab == null)
+        {
+            Debug.LogError($"Prefab '{path}' not found in Resources folder!");
+            return null;
+        }
+        else
+        {
+            Debug.Log($"Prefab '{path}' loaded successfully.");
+        }
+
+        SpriteRenderer sr = prefab.GetComponentInChildren<SpriteRenderer>();
+        if (sr == null)
+        {
+            Debug.LogError($"No SpriteRenderer component found on prefab '{path}'!");
+            return null;
+        }
+        else
+        {
+            Debug.Log($"SpriteRenderer found on prefab '{path}', sprite name: {sr.sprite.name}");
+        }
+
+        return sr.sprite;
     }
+
+
+
+
+
+    private Sprite GetAmmoSprite(WeaponModel model)
+    {
+        GameObject prefab = null;
+
+        switch (model)
+        {
+            case WeaponModel.M11911:
+                prefab = Resources.Load<GameObject>("Pistol_Ammo");
+                break;
+            case WeaponModel.Uzi:
+                prefab = Resources.Load<GameObject>("Rifle_Ammo");
+                break;
+            case WeaponModel.AK74:
+                prefab = Resources.Load<GameObject>("Rifle_Ammo");
+                break;
+        }
+
+        if (prefab != null)
+        {
+            SpriteRenderer sr = prefab.GetComponent<SpriteRenderer>();
+            if (sr != null)
+                return sr.sprite;
+            else
+                Debug.LogWarning("SpriteRenderer не знайдений на префабі " + prefab.name);
+        }
+        else
+        {
+            Debug.LogWarning("Префаб для патронів не знайдений для моделі " + model);
+        }
+
+        return null;
+    }
+
+
 
     private GameObject GetUnActiveWeaponSlot()
     {
+
+
         foreach (GameObject weaponSlot in WeaponManager.Instance.weaponSlots)
         {
             if(weaponSlot != WeaponManager.Instance.activeWeaponSlot)
