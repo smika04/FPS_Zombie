@@ -1,3 +1,4 @@
+using Assets.Scripts.Enums;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,6 +9,10 @@ public class WeaponManager : MonoBehaviour
     public static WeaponManager Instance { get; set; }
     public List<GameObject> weaponSlots = new List<GameObject>();
     public GameObject activeWeaponSlot;
+
+    [Header("Ammo")]
+    public int totalRifleAmmo = 0;
+    public int totalPistolAmmo = 0;
 
     private void Awake()
     {
@@ -54,6 +59,21 @@ public class WeaponManager : MonoBehaviour
     public void PickUpWeapon(GameObject weapon)
     {
        AddWeaponIntoActiveSlot(weapon);
+    }
+
+    public int CheckAmmoLeftFor(WeaponModel Model)
+    {
+        switch (Model)
+        {
+            case WeaponModel.M11911:
+                return totalPistolAmmo;
+            case WeaponModel.Uzi:
+                return totalRifleAmmo;
+            case WeaponModel.AK74:
+                return totalRifleAmmo;
+            default:
+                return 0;
+        }
     }
 
     private void AddWeaponIntoActiveSlot(GameObject pickedWeapon)
@@ -110,6 +130,39 @@ public class WeaponManager : MonoBehaviour
         {
             Weapon newWeapon = activeWeaponSlot.transform.GetChild(0).GetComponent<Weapon>();
             newWeapon.isActiveWeapon = true;
+        }
+    }
+
+    public void PickUpAmmoBox(AmmoBox ammo)
+    {
+        switch(ammo.ammoType)
+        {
+            case AmmoType.PistolAmmo:
+                totalPistolAmmo += ammo.ammoAmount;
+                break;
+            case AmmoType.RifleAmmo:
+                totalRifleAmmo += ammo.ammoAmount;
+                break;
+            case AmmoType.GeneralAmmo:
+                totalPistolAmmo += ammo.ammoAmount;
+                totalRifleAmmo += ammo.ammoAmount;
+                break;
+        }
+    }
+
+    internal void DecreaseTotalAmmo(int bulletsLeft, WeaponModel thisWeaponModel)
+    {
+        switch(thisWeaponModel)
+        {
+            case WeaponModel.M11911:
+                totalPistolAmmo -= bulletsLeft;
+                break;
+            case WeaponModel.Uzi:
+                totalRifleAmmo -= bulletsLeft;
+                break;
+            case WeaponModel.AK74:
+                totalRifleAmmo -= bulletsLeft;
+                break;
         }
     }
 }

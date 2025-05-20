@@ -67,12 +67,11 @@ public class Weapon : MonoBehaviour
                 isShooting = Input.GetKeyDown(KeyCode.Mouse0);
             }
 
-            if (Input.GetKeyDown(KeyCode.R) && bulletsLeft < magazineSize && isRealoding == false)
+            if (Input.GetKeyDown(KeyCode.R) && bulletsLeft < magazineSize && isRealoding == false && WeaponManager.Instance.CheckAmmoLeftFor(thisWeaponModel) > 0)
             {
+
                 Reload();
                 //SoundManager.Instance.realodingSound_M.Play();
-
-                SoundManager.Instance.PlayReloadSound(thisWeaponModel);
             }
 
             //Automatic
@@ -130,13 +129,23 @@ public class Weapon : MonoBehaviour
     private void Reload()
     {
         isRealoding = true;
+        SoundManager.Instance.PlayReloadSound(thisWeaponModel);
 
         Invoke("ReloadCompleted", reloadTime);
     }
 
     private void ReloadCompleted()
     {
-        bulletsLeft = magazineSize;
+        if(WeaponManager.Instance.CheckAmmoLeftFor(thisWeaponModel) > magazineSize)
+        {
+            bulletsLeft = magazineSize;
+            WeaponManager.Instance.DecreaseTotalAmmo(bulletsLeft, thisWeaponModel);
+        }
+        else
+        {
+            bulletsLeft = WeaponManager.Instance.CheckAmmoLeftFor(thisWeaponModel);
+            WeaponManager.Instance.DecreaseTotalAmmo(bulletsLeft, thisWeaponModel);
+        }
         isRealoding = false;
     }
 

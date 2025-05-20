@@ -44,17 +44,12 @@ public class HUDManager : MonoBehaviour
         Weapon activeWeapon = WeaponManager.Instance.activeWeaponSlot.GetComponentInChildren<Weapon>();
 
         GameObject unActiveSlot = GetUnActiveWeaponSlot();
-        Debug.Log("UnActive Weapon Slot: " + (unActiveSlot != null ? unActiveSlot.name : "null"));
-
         Weapon unActiveWeapon = unActiveSlot != null ? unActiveSlot.GetComponentInChildren<Weapon>() : null;
-        Debug.Log("UnActive Weapon: " + (unActiveWeapon != null ? unActiveWeapon.thisWeaponModel.ToString() : "null"));
-
-        Debug.Log("Active Weapon Model: " + (activeWeapon != null ? activeWeapon.thisWeaponModel.ToString() : "null"));
 
         if (activeWeapon)
         {
             magazineAmmoUI.text = $"{activeWeapon.bulletsLeft / activeWeapon.bulletsPerBurst}";
-            totalAmmoUI.text = $"{activeWeapon.magazineSize / activeWeapon.bulletsPerBurst}";
+            totalAmmoUI.text = $"{WeaponManager.Instance.CheckAmmoLeftFor(activeWeapon.thisWeaponModel)}";
 
             WeaponModel model = activeWeapon.thisWeaponModel;
             ammoTypeUI.sprite = GetAmmoSprite(model);
@@ -63,7 +58,6 @@ public class HUDManager : MonoBehaviour
             if (unActiveWeapon)
             {
                 Sprite weaponSprite = GetWeaponSprite(unActiveWeapon.thisWeaponModel);
-                Debug.Log("Weapon sprite loaded: " + (weaponSprite != null));
                 unActiveWeaponUI.sprite = weaponSprite;
             }
         }
@@ -124,10 +118,6 @@ public class HUDManager : MonoBehaviour
 
         return sr.sprite;
     }
-
-
-
-
 
     private Sprite GetAmmoSprite(WeaponModel model)
     {
